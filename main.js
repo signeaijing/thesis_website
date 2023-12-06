@@ -18,8 +18,14 @@ document.body.appendChild(renderer.domElement);
 
 // _____________________INSTANTIALIZE OBJECTS______________________// 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+//const camera1 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+//const camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
 const controls = new OrbitControls(camera, renderer.domElement);
-camera.position.set( 300, 100, 500 );
+//const controls1 = new OrbitControls(camera1, renderer.domElement);
+//const controls2 = new OrbitControls(camera2, renderer.domElement);
+camera.position.set(300,100,500);
+//camera1.position.set( 300, 100, 500 );
+//camera2.position.set( 300, 100, 500 );
 controls.update();
 //camera.position.z = 500;
 //camera.position.set(-250,-50,-250);
@@ -30,6 +36,7 @@ const queerScene = new THREE.Scene();
 const myTextureLoader = new THREE.TextureLoader();
 originalScene.add(camera);
 queerScene.add(camera);
+
 
 // canvas.addEventListener('mousemove', getMouse, false);    // hvad skal jeg kalde den her på? renderer=  
 
@@ -129,32 +136,7 @@ function interpolatedData(data2){
     //const shape = new THREE.Shape(points2);
     //const geometry2 = new THREE.ShapeGeometry(shape); // Create geometry from the shape
 
-//_________________ADD_USER_INPUT_________________// this was created with the help of chatgpt 
-
-
-let sceneState = 'originalScene';     // initialize the scene to one state 
-
-// Double-click event listener
-function toggleScenes() {
-  if (sceneState === 'queerScene') {
-    // if double click and originalscene then go to queerscene
-    originalScene.visible = false;     
-    queerScene.visible = true;
-    sceneState = 'queerScene';
-    
-  } else {
-    // if double click and queer scene then go to original scene
-    queerScene.visible = false;    
-    originalScene.visible = true;
-    sceneState = 'originalScene';
-    console.log('togelelle');
-  };
-};
-// Add event listener for double-click
-document.addEventListener('dblclick', toggleScenes);
-
 // need to use hirarchical positioning here in order to move the latent space, when something moves 
-
 
 //__________________LIGHT_____________________// 
 //const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -165,17 +147,119 @@ const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 originalScene.add(directionalLight);
 queerScene.add(ambientlight);
 
-//_______ANIMATE______// 
+//_____________SWITCH_BETWEEN_SCENES_______________// 
+
+let sceneState = 'originalScene';
 function animate() {
   requestAnimationFrame(animate);
-  // Update objects, camera, or any other animations here
-  renderer.render(originalScene, camera);
-  renderer.render(queerScene, camera)
+
+  if (sceneState === 'queerScene') {
+    renderer.render(queerScene, camera);
+  } else {
+    renderer.render(originalScene, camera);
+  }
+}
+
+function toggleScenes() {
+  if (sceneState === 'queerScene') {
+    originalScene.visible = true;
+    queerScene.visible = false;
+    sceneState = 'originalScene';
+  } else {
+    originalScene.visible = false;
+    queerScene.visible = true;
+    sceneState = 'queerScene';
+  }
+}
+
+document.addEventListener('dblclick', toggleScenes);
+
+// Start the animation loop
+animate();
+
+/*
+let sceneState =  'originalScene';
+function toggleScenes() {
+  if (sceneState === 'queerScene') {
+    console.log('scenestates');
+    originalScene.visible = true;
+    queerScene.visible = false;
+    sceneState = 'originalScene';
+  } else {
+    originalScene.visible = false;
+    queerScene.visible = true;
+    sceneState = 'queerScene';
+  };
+}
+
+// Add event listener for double-click
+document.addEventListener('dblclick', toggleScenes);
+
+function animate(){
+   // Render the active scene based on sceneState -> if not done like this only the last renderer will be visible
+   if (sceneState === 'queerScene') {
+    renderer.render(queerScene, camera);
+  } else {
+    renderer.render(originalScene, camera);
+  };
 }
 
 animate();
 
+/*
+//_______ANIMATE______// 
+function animate() {
+  requestAnimationFrame(animate);
 
+  if (sceneState === 'queerScene') {
+    renderer.render(queerScene, camera);
+  } else {
+    renderer.render(originalScene, camera);
+  }
+}
+
+// Start the animation loop
+animate();
+*/
+
+//_______ANIMATE______// 
+/*
+function animateOriginal(){
+  requestAnimationFrame(animate);
+  renderer.render(originalScene, camera);
+}
+
+function animateQueer() {
+  requestAnimationFrame(animate);
+  // Update objects, camera, or any other animations here
+  renderer.render(queerScene, camera)
+}
+
+animateOriginal();
+animateQueer();*/
+//_________________ADD_USER_INPUT_________________// this was created with the help of chatgpt 
+
+/*
+let sceneState = 'originalScene';     // initialize the scene to one state 
+
+
+// Double-click event listener
+function toggleScenes() {
+   // if double click and queer scene then go to original scene
+  if (sceneState === 'queerScene') {
+    originalScene.visible = true;
+    queerScene.visible = false;
+    sceneState = 'originalScene';
+  } else { // if double click and originalscene then go to queerscene
+    originalScene.visible = false;
+    queerScene.visible = true;
+    sceneState = 'queerScene';
+  }
+}
+
+
+// Add event listener for double-click
+document.addEventListener('dblclick', toggleScenes);*/
 
 //__________ can be thrown out???? _____________// 
 
