@@ -2,6 +2,7 @@ import * as THREE from 'three';    // this is loading in three.js
 import * as tf from '@tensorflow/tfjs';   // loading in tensorflow 
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
+
 //_____________________SETUP_RENDERER______________________// 
 const canvas = document.querySelector('.webgl');      // Select the canvas element from the index.html
 const renderer = new THREE.WebGLRenderer({canvas});
@@ -17,13 +18,13 @@ document.body.appendChild(renderer.domElement);
 //renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 // _____________________INSTANTIALIZE OBJECTS______________________// 
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
+const camera = new THREE.PerspectiveCamera(90, window.innerWidth / window.innerHeight, 0.1, 3000);
 //const camera1 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
 //const camera2 = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000);
 const controls = new OrbitControls(camera, renderer.domElement);
 //const controls1 = new OrbitControls(camera1, renderer.domElement);
 //const controls2 = new OrbitControls(camera2, renderer.domElement);
-camera.position.set(300,100,500);
+camera.position.set(350,100,700);
 //camera1.position.set( 300, 100, 500 );
 //camera2.position.set( 300, 100, 500 );
 controls.update();
@@ -42,18 +43,19 @@ queerScene.add(camera);
 
 // dette gør at vi ikke flytter udenfor skybox
 controls.minDistance = 10;
-controls.maxDistance = 1300;
+controls.maxDistance = 3000;
 
 //_______________________ AXES HELPER________________________// 
 const axesHelper = new THREE.AxesHelper(100);
-originalScene.add(axesHelper);
-queerScene.add(axesHelper);
+//queerScene.add(axesHelper);
+//originalScene.add(axesHelper);
+
 
 //________ LOAD IN LATENT VECTORS ORIGINAL DATA_________//
 async function getOGVectors(){
-  const response = await fetch("/latent_vectors_aegte.json");      // get the specific json file  
+  const response = await fetch("/latent_vectors.json");      // get the specific json file  
   const fetchedData = await response.json();        // tells that we are fetching json 
-  console.log('data in',fetchedData);        // check that the data is right 
+  console.log('original data in',fetchedData);        // check that the data is right 
   return fetchedData;
 };
 
@@ -63,7 +65,7 @@ let originalData;     // declare the data variable in outer scope, needs to be l
 getOGVectors()
   .then(fetchedData => {
     originalData = fetchedData; // Store the fetched data in the outer variable
-    console.log('hello',fetchedData); // check that the data is right 
+    console.log('hello, original vectors1',fetchedData); // check that the data is right 
     OGData(originalData);      // call here ecause getvectors is async
   });
 
@@ -72,7 +74,7 @@ getOGVectors()
 async function getQueerVectors() {
   const queerResponse = await fetch('/interpolated_latent_vectors.json');
   const fetchedQueerData = await queerResponse.json();
-  console.log('data here',fetchedQueerData);
+  console.log('queer data in',fetchedQueerData);
   return fetchedQueerData;
 }
 
@@ -82,14 +84,15 @@ let queerData;
 getQueerVectors()
   .then(async fetchedQueerData => {
    queerData = fetchedQueerData; // Store the fetched data in the outer variable
-    console.log('hello queers',fetchedQueerData); // check that the data is right 
-    interpolatedData(queerData);      // call here ecause getvectors is async
+    console.log('hello queers, queer vectors ',fetchedQueerData); // check that the data is right 
+    interpolatedData(queerData);      // call here because getvectors is async
   });
 
 //___________CREATE_THREE_JS_OBJECTS_FOR_VECTORS___________// 
  //Function to load data into Three.js using the fetched 'data'
 function OGData(data1) {
   const object1 = new THREE.Object3D();      // create empty object 
+  let meshCount1 = 0;
 data1.forEach(vector1 => {     // create new object for each vector in /the data variable
     const [x, y, z] = vector1;
     //const geometry = new THREE.CapsuleGeometry(5, 15, 32, 20);
@@ -99,18 +102,24 @@ data1.forEach(vector1 => {     // create new object for each vector in /the data
       points1.push( new THREE.Vector2( Math.sin( i * 0.2 ) * 5 + 5, ( i - 5 ) * 2 ) );
   }
     //const geometry = new THREE.LatheGeometry( points );
-    const material1 = new THREE.MeshBasicMaterial({ color: '#00e600' });
+    const material1 = new THREE.MeshBasicMaterial({ 
+      color: '#00e600',
+      opacity: 0.85, // Set opacity to create translucency
+      transparent: true}); // Enable transparency});
     const mesh1 = new THREE.Mesh(geometry1, material1);
     mesh1.position.set(x, y, z);      // place the vectors / data points in the scene in relation to each other
     object1.add(mesh1);
+    meshCount1++;
   });
   originalScene.add(object1); // Add the object containing spheres to the scene
   console.log('hello queeres, im also here');
+  console.log(`Number of og meshes created: ${meshCount1}`);     // check how many meshes in the scene
 }
 
 // function to load the interpolated data intro Three.js using the fetched queer data 
-function interpolatedData(data2){
+function interpolatedData(data2){  // this creates 1157 meshes it says in the konsole but it is green 
   const object2 = new THREE.Object3D();
+  let meshCount2 = 0;
   data2.forEach(vector2 => {
     const [h, m, k] = vector2;
     const geometry2 = new THREE.SphereGeometry(5,32,32);
@@ -118,14 +127,19 @@ function interpolatedData(data2){
     for (let j = 0; j < 10; j ++){
       points2.push(new THREE.Vector2(Math.sin(j * 0.2) * 5 + 5, (j - 5) * 2));
     }
-    const material2 = new THREE.MeshBasicMaterial({ color: '#ff1aff' });
+    const material2 = new THREE.MeshBasicMaterial({ 
+      color: '#ff00ff',
+      opacity: 0.55, // Set opacity to create translucency
+      transparent: true}); // Enable transparency});
     const mesh2 = new THREE.Mesh(geometry2,material2);
     mesh2.position.set(h, m, k);
     object2.add(mesh2);
+    meshCount2++;
   });
-  queerScene.add(object2);        // added to the same scene
+  queerScene.add(object2);        
   console.log('helloqueers, im here!');
-} ;
+  console.log(`Number of queer meshes created: ${meshCount2}`);      // check how many meshes in the scene
+}
 
 // this will use the points to create meshes: CAN BE ADDED LATER IF TIME!! 
 //const points2 = [];
@@ -140,71 +154,52 @@ function interpolatedData(data2){
 
 //__________________LIGHT_____________________// 
 //const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
-const ambientlight = new THREE.AmbientLight( 0x404040 ); // soft white lighto
-originalScene.add(ambientlight);
-queerScene.add(ambientlight);
+const ambientlight1 = new THREE.AmbientLight( 0x404040 ); // soft white lighto
+const ambientlight2 = new THREE.AmbientLight( 0x404040 ); // soft white lighto
+originalScene.add(ambientlight1);
+queerScene.add(ambientlight2);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 originalScene.add(directionalLight);
-queerScene.add(ambientlight);
+//queerScene.add(ambientlight);
 
 //_____________SWITCH_BETWEEN_SCENES_______________// 
 
-let sceneState = 'originalScene';
+let sceneState = 'queerScene';
+
+function clearScene(scene) {
+  while (scene.children.length > 0) {
+    scene.remove(scene.children[0]);
+  }
+}
+
 function animate() {
   requestAnimationFrame(animate);
 
-  if (sceneState === 'queerScene') {
-    renderer.render(queerScene, camera);
-  } else {
+  if (sceneState === 'originalScene') {
     renderer.render(originalScene, camera);
-  }
+  } else {
+    renderer.render(queerScene, camera);
+  };
 }
 
-function toggleScenes() {
-  if (sceneState === 'queerScene') {
-    originalScene.visible = true;
-    queerScene.visible = false;
-    sceneState = 'originalScene';
-  } else {
-    originalScene.visible = false;
-    queerScene.visible = true;
-    sceneState = 'queerScene';
+  // when double click it check the current state and changes it to the opposite 
+  function toggleScenes() {
+    if (sceneState === 'originalScene') {
+      originalScene.visible = false;
+      queerScene.visible = true;
+      sceneState = 'queerScene';
+    } else {
+      originalScene.visible = true;
+      queerScene.visible = false;
+      sceneState = 'originalScene';
+    }
   }
-}
 
 document.addEventListener('dblclick', toggleScenes);
 
 // Start the animation loop
 animate();
 
-/*
-let sceneState =  'originalScene';
-function toggleScenes() {
-  if (sceneState === 'queerScene') {
-    console.log('scenestates');
-    originalScene.visible = true;
-    queerScene.visible = false;
-    sceneState = 'originalScene';
-  } else {
-    originalScene.visible = false;
-    queerScene.visible = true;
-    sceneState = 'queerScene';
-  };
-}
-
-// Add event listener for double-click
-document.addEventListener('dblclick', toggleScenes);
-
-function animate(){
-   // Render the active scene based on sceneState -> if not done like this only the last renderer will be visible
-   if (sceneState === 'queerScene') {
-    renderer.render(queerScene, camera);
-  } else {
-    renderer.render(originalScene, camera);
-  };
-}
-
-animate();
 
 /*
 //_______ANIMATE______// 
