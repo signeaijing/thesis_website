@@ -164,7 +164,6 @@ originalScene.add(directionalLight);
 
 //________________ADD_MUSIC_________________//
 
-
 const listener = new THREE.AudioListener();
 const audioLoader = new THREE.AudioLoader();
 const audio = new THREE.Audio(listener);
@@ -184,6 +183,11 @@ function playAudioOnce() {
 
 // Add an event listener to the document body for the initial click
 document.body.addEventListener('click', playAudioOnce);
+
+// Listen for the 'ended' event to restart the audio when finished
+audio.onEnded = function () {
+  audio.playbackTime = 0;
+};
 
 
 
