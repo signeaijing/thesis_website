@@ -117,7 +117,7 @@ data1.forEach(vector1 => {     // create new object for each vector in /the data
 }
 
 // function to load the interpolated data intro Three.js using the fetched queer data 
-function interpolatedData(data2){  // this creates 1157 meshes it says in the konsole but it is green 
+function interpolatedData(data2){  // this creates 11157 meshes it says in the konsole but it is green 
   const object2 = new THREE.Object3D();
   let meshCount2 = 0;
   data2.forEach(vector2 => {
@@ -161,6 +161,31 @@ queerScene.add(ambientlight2);
 const directionalLight = new THREE.DirectionalLight(0xffffff, 0.5);
 originalScene.add(directionalLight);
 //queerScene.add(ambientlight);
+
+//________________ADD_MUSIC_________________//
+
+
+const listener = new THREE.AudioListener();
+const audioLoader = new THREE.AudioLoader();
+const audio = new THREE.Audio(listener);
+camera.add(listener); // Ensure it's attached to an object in the scene
+
+audioLoader.load('public/Rhythm_Variation_03.mp3', function (buffer) {
+  audio.setBuffer(buffer);
+  audio.setLoop(true); // Set to loop
+  audio.setVolume(0.7); // Set the volume (0.5 is half volume)
+});
+
+// Function to start music when clicked
+function playAudioOnce() {
+  audio.play();
+  document.body.removeEventListener('click', playAudioOnce);
+}
+
+// Add an event listener to the document body for the initial click
+document.body.addEventListener('click', playAudioOnce);
+
+
 
 //_____________SWITCH_BETWEEN_SCENES_______________// 
 
