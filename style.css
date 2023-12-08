@@ -30,6 +30,7 @@ body {
   .info-container:hover {
     height: auto; /* Expanded height on hover */
     overflow: auto; /* Enable scrolling if content exceeds height */
+    background-color: rgba(53, 48, 45, 0.98);
   }
   
   .info-content {
