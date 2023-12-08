@@ -174,7 +174,7 @@ camera.add(listener); // Ensure it's attached to an object in the scene
 audioLoader.load('/Rhythm_Variation_03.mp3', function (buffer) {
   audio.setBuffer(buffer);
   audio.setLoop(true); // Set to loop
-  audio.setVolume(0.7); // Set the volume (0.5 is half volume)
+  audio.setVolume(0.5); // Set the volume (0.5 is half volume)
 });
 
 // Function to start music when clicked
