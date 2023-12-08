@@ -169,7 +169,7 @@ const audioLoader = new THREE.AudioLoader();
 const audio = new THREE.Audio(listener);
 camera.add(listener); // Ensure it's attached to an object in the scene
 
-audioLoader.load('public/Rhythm_Variation_03.mp3', function (buffer) {
+audioLoader.load('/Rhythm_Variation_03.mp3', function (buffer) {
   audio.setBuffer(buffer);
   audio.setLoop(true); // Set to loop
   audio.setVolume(0.7); // Set the volume (0.5 is half volume)
